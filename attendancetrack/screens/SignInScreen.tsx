@@ -22,7 +22,7 @@ const SignInScreen = () => {
     try {
       console.log("Attempting to connect to:", "http://192.168.29.151:3000/api/login");
       
-      const response = await axios.post("http://192.168.121.239:3000/api/login", {
+      const response = await axios.post("http://172.17.144.1:3000/api/login", {
         username,
         password,
       });

@@ -24,7 +24,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // const SERVER_URL = 'http://192.168.194.239:3000'; // Update with your server IP
-const SERVER_URL = 'http://192.168.121.239:3000'; // Update with your server IP
+const SERVER_URL = 'http://172.17.144.1:3000'; // Update with your server IP
 
 const ProjectsScreen = () => {
   const route = useRoute();
