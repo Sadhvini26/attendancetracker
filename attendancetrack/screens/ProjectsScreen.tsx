@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { 
   StyleSheet, 
@@ -23,8 +21,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// const SERVER_URL = 'http://192.168.194.239:3000'; // Update with your server IP
-const SERVER_URL = 'http://172.17.144.1:3000'; // Update with your server IP
+const SERVER_URL = 'http://192.168.231.239:3000'; // Update with your server IP
+// const SERVER_URL = 'http://192.168.198.239:3000'; // Update with your server IP
 
 const ProjectsScreen = () => {
   const route = useRoute();

@@ -156,5 +156,20 @@ const projects = await Project.find({
     return res.status(500).json({ message: 'Server error' });
   }
 });
+router.get('/mentored-by/:facultyUsername', authenticateToken, async (req, res) => {
+  try {
+    const { facultyUsername } = req.params;
+    console.log(facultyUsername)
+    // Find projects where the mentor field matches the faculty username
+    const projects = await Project.find({ 
+      mentor: facultyUsername,
+      status: { $in: ['registered', 'active'] } // Only get active projects
+    }).populate('teamMembers', 'name rollNo');
 
+    res.json(projects);
+  } catch (error) {
+    console.error('Get mentored projects error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 module.exports = router;

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const Project = require('../models/Project')
 const jwt = require('jsonwebtoken');
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -85,4 +86,30 @@ router.get('/verify-token', authenticateToken, (req, res) => {
     role: req.user.role
   });
 });
+router.get(
+  "/faculty/:facultyId/students",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const { facultyId } = req.params;
+
+      const projects = await Project.find({ mentor: facultyId}).lean();
+    console.log('Projects found:', projects);
+
+    const allRolls = projects
+  .flatMap(proj => proj.teamMembers || [])      // get all teamMembers from projects
+  .map(member => member.rollNo)                  // extract `rollNo` (not `rollNumber`)
+  .filter(Boolean);                              // filter out empty or null values
+
+
+    console.log('All roll numbers:', allRolls);
+      return res.json({ rollNumbers: allRolls });
+    } catch (err) {
+      console.error("Error fetching students for faculty:", err);
+      return res.status(500).json({ message: "Server error" });
+    }
+  }
+);
+
+
 module.exports = router;

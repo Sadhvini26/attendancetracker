@@ -20,7 +20,11 @@ mongoose.connect(process.env.MONGODB_URI)
 // Routes
 app.use('/api', require('./routes/auth'));
 app.use('/api/projects', require('./routes/projects')); // Add this line
+// const facultyRoutes = require('./routes/faculty');
+// const attendanceRoutes = require('./routes/attendance');
 
+// app.use('/api/faculty', facultyRoutes);
+// app.use('/api/attendance', attendanceRoutes);
 // Test route
 app.get('/', (req, res) => {
   res.send('Attendance Tracking API is running');

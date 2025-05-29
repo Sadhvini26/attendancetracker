@@ -14,8 +14,8 @@ import { FontAwesome } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 
-const API_URL = "http://172.17.144.1:3000/api";
-// const API_URL = "http://192.168.194.239:3000/api";
+// const API_URL = "http://192.168.198.239:3000/api";
+const API_URL = "http://192.168.231.239:3000/api";
 
 const TeamRegistration = () => {
   const navigation = useNavigation();
@@ -417,3 +417,4 @@ const styles = StyleSheet.create({
 });
 
 export default TeamRegistration;
+

@@ -21,7 +21,7 @@ type RootStackParamList = {
   FacultyDashboard: { faculty: Faculty };
   NoticeBoard: undefined;
   StudentDetails: undefined;
-  TakeAttendance: undefined;
+  TakeAttendance: {faculty: Faculty};
   Timetable: undefined;
   DisciplinaryPoints: undefined;
   FacultyPermissions: undefined;
@@ -43,7 +43,7 @@ const FacultyDashboard = () => {
   const route = useRoute<FacultyDashboardRouteProp>();
   
   // Get faculty data from route params, or use default if not available
-  const faculty = route.params?.faculty || { name: 'FACULTY NAME' };
+  const faculty = route.params?.faculty;
 
   // Simulating font loading
   useEffect(() => {
@@ -135,7 +135,7 @@ const FacultyDashboard = () => {
         <View style={styles.menuRow}>
           <TouchableOpacity 
             style={styles.menuItem}
-            onPress={() => navigation.navigate('TakeAttendance')}
+            onPress={() => navigation.navigate('TakeAttendance',{faculty})}
           >
             <MaterialCommunityIcons name="calendar-check-outline" size={28} color="black" />
             <Text style={styles.menuItemText}>Manage Attendance</Text>
