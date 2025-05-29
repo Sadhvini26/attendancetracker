@@ -20,9 +20,9 @@ import EditNoticeBoard from './screens/EditNoticeBoard';
 import FacultyDetailsScreen from './screens/FacultyDetailsScreen';
 import Internships from './screens/Internships'
 import FD from './screens/FD'
-import 'react-native-get-random-values';
-import { Buffer } from 'react-native-blob-util';
-global.Buffer = Buffer; // Polyfill Buffer for xlsx
+// import 'react-native-get-random-values';
+// import { Buffer } from 'react-native-blob-util';
+// global.Buffer = Buffer; // Polyfill Buffer for xlsx
 // Create a navigation stack
 const Stack = createNativeStackNavigator();
 

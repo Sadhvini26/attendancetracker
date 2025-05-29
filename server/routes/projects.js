@@ -22,10 +22,13 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// Get available project ideas
+// Get available project ideas (only those with maxTeams > 0)
 router.get('/ideas', authenticateToken, async (req, res) => {
   try {
-    const projects = await Project.find({ status: 'available' });
+    const projects = await Project.find({ 
+      status: 'available', 
+      maxTeams: { $gt: 0 } 
+    });
     return res.status(200).json(projects);
   } catch (error) {
     console.error('Get project ideas error:', error);
@@ -58,22 +61,26 @@ router.post('/register/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'Project not found' });
     }
     
-    // Check if project is still available
-    if (project.status !== 'available') {
+    // Check availability by both status and maxTeams
+    if (project.status !== 'available' || project.maxTeams <= 0) {
       return res.status(400).json({ message: 'Project is no longer available' });
     }
     
     // Validate team size
     if (teamMembers.length > project.maxTeamSize) {
       return res.status(400).json({ 
-        message: `Maximum team size for this project is ${project.maxTeamSize}`
+        message: `Maximum team size for this project is ${project.maxTeamSize}` 
       });
     }
     
     // Update project with team information
     project.teamMembers = teamMembers;
     project.leadId = req.user.userId;
-    project.status = 'registered';
+    
+    // Decrement available slots
+    project.maxTeams -= 1;
+    // If no more slots, flip status to 'registered'
+    project.status = project.maxTeams > 0 ? 'available' : 'registered';
     
     await project.save();
     
@@ -90,10 +97,10 @@ router.post('/register/:id', authenticateToken, async (req, res) => {
 // Submit a new custom project
 router.post('/custom', authenticateToken, async (req, res) => {
   try {
-    const { title, description, teamMembers, domain, skills } = req.body;
+    const { title, description, teamMembers, domain, skills, maxTeams, maxTeamSize, deadline } = req.body;
     
     // Validate request
-    if (!title || !description || !teamMembers || teamMembers.length === 0) {
+    if (!title || !description || !Array.isArray(teamMembers) || teamMembers.length === 0) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
     
@@ -103,9 +110,13 @@ router.post('/custom', authenticateToken, async (req, res) => {
       description,
       domain,
       skills,
+      deadline,
+      maxTeamSize,
+      maxTeams: typeof maxTeams === 'number' ? maxTeams : 1,  // default 1 if not provided
       teamMembers,
       leadId: req.user.userId,
-      status: 'pending_approval'
+      status: 'pending_approval',
+      submissionDate: new Date()
     });
     
     await newProject.save();
@@ -120,10 +131,9 @@ router.post('/custom', authenticateToken, async (req, res) => {
   }
 });
 
-// Get all projects (for admin view)
+// Get all projects (for admin/faculty)
 router.get('/', authenticateToken, async (req, res) => {
   try {
-    // Check if user is admin or faculty
     const user = await User.findById(req.user.userId);
     if (!user || (user.role !== 'admin' && user.role !== 'faculty')) {
       return res.status(403).json({ message: 'Access denied' });
@@ -140,36 +150,35 @@ router.get('/', authenticateToken, async (req, res) => {
 // Get projects for a specific student
 router.get('/student/my-projects', authenticateToken, async (req, res) => {
   try {
-    console.log(req.user)
-    console.log(req.user.name)
     const user = await User.findById(req.user.userId);
-const projects = await Project.find({
-  $or: [
-    { leadId: req.user.userId },
-    { 'teamMembers.rollNo': user.username } // Now using the correct username
-  ]
-}).sort({ submissionDate: -1 });
-    console.log(projects);
+    const projects = await Project.find({
+      $or: [
+        { leadId: req.user.userId },
+        { 'teamMembers.rollNo': user.username }
+      ]
+    }).sort({ submissionDate: -1 });
     return res.status(200).json(projects);
   } catch (error) {
     console.error('Get student projects error:', error);
     return res.status(500).json({ message: 'Server error' });
   }
 });
+
+// Get projects mentored by a specific faculty
 router.get('/mentored-by/:facultyUsername', authenticateToken, async (req, res) => {
   try {
     const { facultyUsername } = req.params;
-    console.log(facultyUsername)
-    // Find projects where the mentor field matches the faculty username
-    const projects = await Project.find({ 
-      mentor: facultyUsername,
-      status: { $in: ['registered', 'active'] } // Only get active projects
-    }).populate('teamMembers', 'name rollNo');
-
-    res.json(projects);
+    const projects = await Project
+      .find({ 
+        mentor: facultyUsername,
+        status: { $in: ['registered', 'active'] }
+      })
+      .populate('teamMembers', 'name rollNo');
+    return res.status(200).json(projects);
   } catch (error) {
     console.error('Get mentored projects error:', error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error' });
   }
 });
+
 module.exports = router;

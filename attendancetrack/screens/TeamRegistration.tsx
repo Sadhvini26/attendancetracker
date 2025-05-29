@@ -15,7 +15,7 @@ import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 
 // const API_URL = "http://192.168.198.239:3000/api";
-const API_URL = "http://192.168.231.239:3000/api";
+const API_URL = "http://192.168.29.151:3000/api";
 
 const TeamRegistration = () => {
   const navigation = useNavigation();
