@@ -21,7 +21,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const SERVER_URL = 'http://192.168.29.151:3000'; // Update with your server IP
+const SERVER_URL = 'http://192.168.149.239:3000'; // Update with your server IP
 // const SERVER_URL = 'http://192.168.198.239:3000'; // Update with your server IP
 
 const ProjectsScreen = () => {
@@ -550,7 +550,7 @@ const ProjectsScreen = () => {
         <Text style={styles.addMemberText}>Add Team Member</Text>
       </TouchableOpacity>
       
-      <View style={styles.formButtonsRow}>
+      {/* <View style={styles.formButtonsRow}>
         <TouchableOpacity 
           style={styles.cancelButton}
           onPress={() => setShowCustomForm(false)}
@@ -572,7 +572,7 @@ const ProjectsScreen = () => {
             <Text style={styles.submitButtonText}>Submit Project</Text>
           )}
         </TouchableOpacity>
-      </View>
+      </View> */}
     </ScrollView>
   );
 
@@ -742,7 +742,7 @@ const ProjectsScreen = () => {
           </Text>
         </TouchableOpacity>
         
-        <TouchableOpacity 
+        {/* <TouchableOpacity 
           style={[styles.tab, activeTab === 'custom' && styles.activeTab]}
           onPress={() => {
             setActiveTab('custom');
@@ -757,7 +757,7 @@ const ProjectsScreen = () => {
           <Text style={[styles.tabText, activeTab === 'custom' && styles.activeTabText]}>
             Submit Project
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       
       {loading && !refreshing ? (

@@ -7,7 +7,8 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8081;
-
+const facultyRoutes =require('./routes/faculty')
+const permissionRoutes = require("./routes/permissions");
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -22,8 +23,10 @@ app.use('/api', require('./routes/auth'));
 app.use('/api/projects', require('./routes/projects')); // Add this line
 // const facultyRoutes = require('./routes/faculty');
 // const attendanceRoutes = require('./routes/attendance');
-
-// app.use('/api/faculty', facultyRoutes);
+const noticeRoutes = require('./routes/noticeRoutes');
+app.use('/api/notices', noticeRoutes);
+app.use("/api/permissions", permissionRoutes);
+// app.use('/api/faculty-projects', facultyRoutes);
 // app.use('/api/attendance', attendanceRoutes);
 // Test route
 app.get('/', (req, res) => {

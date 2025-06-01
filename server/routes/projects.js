@@ -25,16 +25,24 @@ const authenticateToken = (req, res, next) => {
 // Get available project ideas (only those with maxTeams > 0)
 router.get('/ideas', authenticateToken, async (req, res) => {
   try {
+    console.log('🔐 Authenticated user:', req.user); // debug logged-in user
+    console.log('📥 Fetching projects with status "available" and maxTeams > 0...');
+
     const projects = await Project.find({ 
-      status: 'available', 
-      maxTeams: { $gt: 0 } 
+      status: 'available'
+      // maxTeams: { $gt: 0 } 
     });
+
+    console.log(`✅ Found ${projects.length} available project(s)`);
     return res.status(200).json(projects);
+    
   } catch (error) {
-    console.error('Get project ideas error:', error);
+    console.error('❌ Get project ideas error:', error.message);
+    console.error('📛 Stack Trace:', error.stack);
     return res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 // Get project by ID
 router.get('/:id', authenticateToken, async (req, res) => {
@@ -93,43 +101,47 @@ router.post('/register/:id', authenticateToken, async (req, res) => {
     return res.status(500).json({ message: 'Server error' });
   }
 });
+// const Project = require('../models/Project');
+
+
+
 
 // Submit a new custom project
-router.post('/custom', authenticateToken, async (req, res) => {
-  try {
-    const { title, description, teamMembers, domain, skills, maxTeams, maxTeamSize, deadline } = req.body;
+// router.post('/custom', authenticateToken, async (req, res) => {
+//   try {
+//     const { title, description, teamMembers, domain, skills, maxTeams, maxTeamSize, deadline } = req.body;
     
-    // Validate request
-    if (!title || !description || !Array.isArray(teamMembers) || teamMembers.length === 0) {
-      return res.status(400).json({ message: 'Missing required fields' });
-    }
+//     // Validate request
+//     if (!title || !description || !Array.isArray(teamMembers) || teamMembers.length === 0) {
+//       return res.status(400).json({ message: 'Missing required fields' });
+//     }
     
-    // Create project
-    const newProject = new Project({
-      title,
-      description,
-      domain,
-      skills,
-      deadline,
-      maxTeamSize,
-      maxTeams: typeof maxTeams === 'number' ? maxTeams : 1,  // default 1 if not provided
-      teamMembers,
-      leadId: req.user.userId,
-      status: 'pending_approval',
-      submissionDate: new Date()
-    });
+//     // Create project
+//     const newProject = new Project({
+//       title,
+//       description,
+//       domain,
+//       skills,
+//       deadline,
+//       maxTeamSize,
+//       maxTeams: typeof maxTeams === 'number' ? maxTeams : 1,  // default 1 if not provided
+//       teamMembers,
+//       leadId: req.user.userId,
+//       status: 'pending_approval',
+//       submissionDate: new Date()
+//     });
     
-    await newProject.save();
+//     await newProject.save();
     
-    return res.status(201).json({ 
-      message: 'Custom project submitted for approval',
-      project: newProject
-    });
-  } catch (error) {
-    console.error('Custom project submission error:', error);
-    return res.status(500).json({ message: 'Server error' });
-  }
-});
+//     return res.status(201).json({ 
+//       message: 'Custom project submitted for approval',
+//       project: newProject
+//     });
+//   } catch (error) {
+//     console.error('Custom project submission error:', error);
+//     return res.status(500).json({ message: 'Server error' });
+//   }
+// });
 
 // Get all projects (for admin/faculty)
 router.get('/', authenticateToken, async (req, res) => {
@@ -180,5 +192,57 @@ router.get('/mentored-by/:facultyUsername', authenticateToken, async (req, res) 
     return res.status(500).json({ message: 'Server error' });
   }
 });
+// routes/projects.js
+// const express = require('express');
+// const router = express.Router();
+// const authenticateToken = require('../middleware/auth');
+// const Project = require('../models/Project');
+
+// POST /api/projects/add
+router.post('/add', authenticateToken, async (req, res) => {
+  try {
+    const { title, description, domain, skills, deadline, maxTeamSize } = req.body;
+    console.log(req.user);
+    
+    if (!title?.trim() || !description?.trim()) {
+      return res.status(400).json({ message: 'Title and description are required' });
+    }
+
+    const mentorIdentifier = req.user.username || req.user.name || req.user.userId;
+    const newProject = new Project({
+      title: title.trim(),
+      description: description.trim(),
+      domain: domain?.trim() || '',
+      skills: Array.isArray(skills) ? skills : [],
+      mentor: mentorIdentifier,
+      deadline: deadline ? new Date(deadline) : null,
+      maxTeamSize: maxTeamSize || 4,
+      status: 'available'
+    });
+
+    await newProject.save();
+    console.log(`✅ Project "${newProject.title}" added by ${mentorIdentifier}`);
+    res.status(201).json({ message: 'Project added successfully', project: newProject });
+  } catch (err) {
+    console.error('❌ Error adding project:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// GET /api/projects/my-projects
+router.get('/faculty/my-projects', authenticateToken, async (req, res) => {
+  try {
+    const mentorIdentifier = req.user.username || req.user.name || req.user.userId;
+    const projects = await Project.find({ mentor: mentorIdentifier })
+      .sort({ submissionDate: -1 });
+    console.log(`📋 Retrieved ${projects.length} projects for ${mentorIdentifier}`);
+    res.json(projects);
+  } catch (err) {
+    console.error('❌ Error fetching projects:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 module.exports = router;
+
+// module.exports = router;

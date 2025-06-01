@@ -40,7 +40,7 @@ const AdminDashboard = () => {
 
         {/* Permissions & Settings */}
         <View style={styles.quickActionsContainer}>
-          <TouchableOpacity style={styles.quickActionButton} onPress={() => navigation.navigate('Permissions')}>
+          <TouchableOpacity style={styles.quickActionButton} onPress={() => navigation.navigate('FacultyPermissions')}>
             <FontAwesome name="file-text-o" size={24} color="black" />
             <Text style={styles.quickActionText}>Permissions</Text>
           </TouchableOpacity>
@@ -61,14 +61,14 @@ const AdminDashboard = () => {
             <FontAwesome name="commenting-o" size={28} color="black" />
             <Text style={styles.menuItemText}>Edit Notice Board</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('SD')}>
+          <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('StudentDetails')}>
             <FontAwesome name="id-card-o" size={28} color="black" />
             <Text style={styles.menuItemText} >Student Details</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.menuRow}>
-          <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('FD')}>
+          <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('FacultyDetailsScreen')}>
             <FontAwesome name="address-book-o" size={28} color="black" />
             <Text style={styles.menuItemText}>Faculty Details</Text>
           </TouchableOpacity>

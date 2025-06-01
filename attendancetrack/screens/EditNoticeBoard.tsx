@@ -2,7 +2,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import axios from 'axios';
 
+const SERVER_URL = 'http://192.168.149.239:3000';
 const EditNoticeBoard = () => {
   const [notices, setNotices] = useState([
     { id: '1', text: 'Exam schedule released.' },
@@ -10,19 +12,27 @@ const EditNoticeBoard = () => {
   ]);
   const [newNotice, setNewNotice] = useState('');
 
-  const addNotice = () => {
-    if (!newNotice.trim()) {
-      Alert.alert('Error', 'Notice text cannot be empty');
-      return;
-    }
-    const newEntry = {
-      id: Date.now().toString(),
+  const addNotice = async () => {
+  if (!newNotice.trim()) {
+    Alert.alert('Error', 'Notice text cannot be empty');
+    return;
+  }
+
+  try {
+    const response = await axios.post(`${SERVER_URL}/api/notices/add`, {
       text: newNotice,
-    };
-    setNotices([...notices, newEntry]);
+    });
+
+    const savedNotice = response.data.notice;
+
+    setNotices((prevNotices) => [...prevNotices, savedNotice]);
     setNewNotice('');
     Alert.alert('Success', 'Notice added successfully!');
-  };
+  } catch (error) {
+    console.error('Error adding notice:', error);
+    Alert.alert('Error', 'Failed to add notice. Please try again.');
+  }
+};
 
   const deleteNotice = (id: string) => {
     setNotices(notices.filter((notice) => notice.id !== id));

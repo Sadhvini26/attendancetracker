@@ -26,9 +26,17 @@ const projectSchema = new mongoose.Schema({
   deadline: {
     type: Date
   },
-  maxTeamSize: {
+  // maxTeamSize: {
+  //   type: Number,
+  //   default: 4
+  // },
+   maxTeamSize: {
     type: Number,
     default: 4
+  },
+  maxTeams: {
+    type: Number,
+    default: 5
   },
   leadId: {
     type: mongoose.Schema.Types.ObjectId,

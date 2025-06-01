@@ -1,41 +1,35 @@
-// routes/noticeRoutes.js - API routes for notice board
 const express = require('express');
 const router = express.Router();
-const noticeController = require('../controllers/noticeController');
-const { protect, authorize } = require('../middleware/authMiddleware');
+const Notice = require('../models/Notice');
 
-// Public routes
-router.get('/public', async (req, res) => {
+// Add notice
+router.post('/add', async (req, res) => {
   try {
-    // Get only important public notices for the login page
-    const publicNotices = await Notice.find({
-      targetAudience: 'all',
-      isImportant: true,
-      expiryDate: { $gte: new Date() }
-    })
-    .sort({ createdAt: -1 })
-    .limit(5);
+    const { text } = req.body;
+    if (!text || !text.trim()) {
+      return res.status(400).json({ message: 'Notice text is required' });
+    }
 
-    res.status(200).json({
-      success: true,
-      notices: publicNotices
-    });
+    const newNotice = new Notice({ text });
+    await newNotice.save();
+
+    res.status(201).json({ message: 'Notice added successfully', notice: newNotice });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching public notices',
-      error: error.message
-    });
+    console.error('Add Notice Error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Protected routes - need authentication
-router.get('/', protect, noticeController.getNotices);
-router.get('/:id', protect, noticeController.getNoticeById);
+// Get all notices
+router.get('/', async (req, res) => {
+  try {
+    const notices = await Notice.find().sort({ createdAt: -1 });
+    res.status(200).json(notices);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching notices' });
+  }
+});
+// GET /api/notices
 
-// Admin only routes
-router.post('/', protect, authorize('admin'), noticeController.createNotice);
-router.put('/:id', protect, authorize('admin'), noticeController.updateNotice);
-router.delete('/:id', protect, authorize('admin'), noticeController.deleteNotice);
 
 module.exports = router;

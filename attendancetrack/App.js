@@ -20,6 +20,9 @@ import EditNoticeBoard from './screens/EditNoticeBoard';
 import FacultyDetailsScreen from './screens/FacultyDetailsScreen';
 import Internships from './screens/Internships'
 import FD from './screens/FD'
+import FacultyDetails from './screens/FacultyDetailsScreen';
+import FacultyProjects from './screens/FacultyProjects';
+import StudentDetails from './screens/StudentDetails';
 // import 'react-native-get-random-values';
 // import { Buffer } from 'react-native-blob-util';
 // global.Buffer = Buffer; // Polyfill Buffer for xlsx
@@ -48,14 +51,16 @@ export default function App() {
         <Stack.Screen name="Projects" component={ProjectsScreen} />
         <Stack.Screen name="NB" component={NoticeBoard} />
         <Stack.Screen name="EditNoticeBoard" component={EditNoticeBoard} />
-        <Stack.Screen name="SD" component={SD} />
+        <Stack.Screen name="StudentDetails" component={StudentDetails} />
+        <Stack.Screen name="FD" component={FD} />
         <Stack.Screen name="commonContact" component={commonContact} />
         <Stack.Screen name="Permissions" component={Permissions} />
         <Stack.Screen name="Timetable" component={Timetable} />
         <Stack.Screen name="FacultyPermissions" component={FacultyPermissions} />
-        <Stack.Screen name="FD" component={FD} />
+        <Stack.Screen name="FacultyDetailsScreen" component={FacultyDetailsScreen} />
         <Stack.Screen name="attn" component={attn} />
         <Stack.Screen name="Internships" component={Internships} />
+        <Stack.Screen name="FacultyProjects" component={FacultyProjects} />
       </Stack.Navigator>
     </NavigationContainer>
   );

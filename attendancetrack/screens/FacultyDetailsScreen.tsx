@@ -1,319 +1,428 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  StyleSheet, 
-  Text, 
-  View, 
-  SafeAreaView, 
-  StatusBar, 
-  TouchableOpacity, 
-  ScrollView,
-  Image,
-  Linking
-} from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { useNavigation } from '@react-navigation/native';
+// Admin -> Faculty Details
+import React, { useState } from 'react';
+import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity, Alert, Modal } from 'react-native';
 
-const FacultyDetailsScreen = ({ route }) => {
-  const navigation = useNavigation();
-  // Sample faculty data - in a real app, would be fetched from API
-  // or passed through route params
-  const facultyData = route.params?.faculty || {
-    id: '1',
-    name: 'Dr. Priyanka Sharma',
-    designation: 'Associate Professor',
-    department: 'Computer Science',
-    email: 'priyanka.sharma@kmit.edu',
-    phone: '+91 98765 43210',
-    qualification: 'Ph.D. in Computer Science',
-    experience: '10 years',
-    subjects: ['Data Structures', 'Database Management Systems', 'Machine Learning'],
-    researchInterests: ['Artificial Intelligence', 'Data Mining', 'Cloud Computing'],
-    officeHours: 'Mon-Fri: 2:00 PM - 4:00 PM',
-    joinedYear: '2013'
+const FacultyDetails = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedFaculty, setSelectedFaculty] = useState(null);
+  const [expandedCard, setExpandedCard] = useState(null);
+  const [newFaculty, setNewFaculty] = useState({
+    name: '',
+    department: '',
+    designation: ''
+  });
+  const [editFaculty, setEditFaculty] = useState({
+    name: '',
+    department: '',
+    designation: ''
+  });
+  
+  const [facultyList, setFacultyList] = useState([
+    { id: '1', name: 'Mr. Rajesh Kumar', department: 'Computer Science', designation: 'Professor' },
+    { id: '2', name: 'Ms. Ananya Sharma', department: 'Mathematics', designation: 'Assistant Professor' },
+    { id: '3', name: 'Dr. Sameer Reddy', department: 'Physics', designation: 'Associate Professor' },
+    { id: '4', name: 'Mr. Ajay Reddy', department: 'Computer Science', designation: 'Associate Professor' },
+    { id: '5', name: 'Dr. Sameera', department: 'Physics', designation: 'Associate Professor' },
+    { id: '6', name: 'Ms. Seshilekha', department: 'Mathematics', designation: 'Associate Professor' },
+    { id: '7', name: 'Dr. Sanjay Reddy', department: 'Computer Science', designation: 'Professor' },
+    { id: '8', name: 'Dr. Ajay Kumar', department: 'Physics', designation: 'Professor' },
+  ]);
+
+  const filteredFaculty = facultyList.filter(faculty =>
+    faculty.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    faculty.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    faculty.designation.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleAddFaculty = () => {
+    if (!newFaculty.name.trim() || !newFaculty.department.trim() || !newFaculty.designation.trim()) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    const newId = (facultyList.length + 1).toString();
+    const facultyToAdd = {
+      id: newId,
+      name: newFaculty.name.trim(),
+      department: newFaculty.department.trim(),
+      designation: newFaculty.designation.trim()
+    };
+
+    setFacultyList([...facultyList, facultyToAdd]);
+    setNewFaculty({ name: '', department: '', designation: '' });
+    setShowAddModal(false);
+    Alert.alert('Success', 'Faculty member added successfully!');
+  };
+
+  const handleCancel = () => {
+    setNewFaculty({ name: '', department: '', designation: '' });
+    setShowAddModal(false);
+  };
+
+  const handleCardPress = (facultyId) => {
+    setExpandedCard(expandedCard === facultyId ? null : facultyId);
+  };
+
+  const handleEdit = (faculty) => {
+    setSelectedFaculty(faculty);
+    setEditFaculty({
+      name: faculty.name,
+      department: faculty.department,
+      designation: faculty.designation
+    });
+    setShowEditModal(true);
+    setExpandedCard(null);
+  };
+
+  const handleDelete = (facultyId) => {
+    Alert.alert(
+      'Confirm Delete',
+      'Are you sure you want to delete this faculty member?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            setFacultyList(facultyList.filter(faculty => faculty.id !== facultyId));
+            setExpandedCard(null);
+            Alert.alert('Success', 'Faculty member deleted successfully!');
+          }
+        }
+      ]
+    );
+  };
+
+  const handleUpdateFaculty = () => {
+    if (!editFaculty.name.trim() || !editFaculty.department.trim() || !editFaculty.designation.trim()) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    const updatedFacultyList = facultyList.map(faculty =>
+      faculty.id === selectedFaculty.id
+        ? {
+            ...faculty,
+            name: editFaculty.name.trim(),
+            department: editFaculty.department.trim(),
+            designation: editFaculty.designation.trim()
+          }
+        : faculty
+    );
+
+    setFacultyList(updatedFacultyList);
+    setShowEditModal(false);
+    setSelectedFaculty(null);
+    setEditFaculty({ name: '', department: '', designation: '' });
+    Alert.alert('Success', 'Faculty member updated successfully!');
+  };
+
+  const handleEditCancel = () => {
+    setShowEditModal(false);
+    setSelectedFaculty(null);
+    setEditFaculty({ name: '', department: '', designation: '' });
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#000" />
+    <View style={styles.container}>
+      <Text style={styles.title}>Faculty Details</Text>
       
-      {/* Header */}
-      <View style={styles.header}>
+      <View style={styles.headerRow}>
+        <TextInput
+          style={[styles.searchInput, { flex: 1, marginRight: 10 }]}
+          placeholder="Search Faculty"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
         <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          style={styles.addButton}
+          onPress={() => setShowAddModal(true)}
         >
-          <Icon name="arrow-back" size={24} color="white" />
+          <Text style={styles.addButtonText}>Add Faculty</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Faculty Details</Text>
       </View>
       
-      <ScrollView style={styles.contentContainer}>
-        {/* Faculty Profile Card */}
-        <View style={styles.profileCard}>
-          <View style={styles.profileImageContainer}>
-            <FontAwesome name="user-circle" size={80} color="#000" />
-          </View>
-          
-          <View style={styles.profileInfo}>
-            <Text style={styles.facultyName}>{facultyData.name}</Text>
-            <Text style={styles.designation}>{facultyData.designation}</Text>
-            <Text style={styles.department}>{facultyData.department}</Text>
-          </View>
-        </View>
-        
-        {/* Contact Information */}
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Contact Information</Text>
-          
-          <View style={styles.detailItem}>
-            <Icon name="mail-outline" size={22} color="#000" style={styles.itemIcon} />
-            <Text style={styles.itemText}>{facultyData.email}</Text>
-            <TouchableOpacity 
-              style={styles.actionButton}
-              onPress={() => Linking.openURL(`mailto:${facultyData.email}`)}
-            >
-              <MaterialIcons name="email" size={22} color="#007AFF" />
-            </TouchableOpacity>
-          </View>
-          
-          <View style={styles.detailItem}>
-            <Icon name="call-outline" size={22} color="#000" style={styles.itemIcon} />
-            <Text style={styles.itemText}>{facultyData.phone}</Text>
-            <TouchableOpacity 
-              style={styles.actionButton}
-              onPress={() => Linking.openURL(`tel:${facultyData.phone.replace(/\s+/g, '')}`)}
-            >
-              <MaterialIcons name="phone" size={22} color="#007AFF" />
-            </TouchableOpacity>
-          </View>
-        </View>
-        
-        {/* Professional Information */}
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Professional Information</Text>
-          
-          <View style={styles.detailItem}>
-            <Icon name="school-outline" size={22} color="#000" style={styles.itemIcon} />
-            <Text style={styles.itemLabel}>Qualification:</Text>
-            <Text style={styles.itemText}>{facultyData.qualification}</Text>
-          </View>
-          
-          <View style={styles.detailItem}>
-            <Icon name="time-outline" size={22} color="#000" style={styles.itemIcon} />
-            <Text style={styles.itemLabel}>Experience:</Text>
-            <Text style={styles.itemText}>{facultyData.experience}</Text>
-          </View>
-          
-          <View style={styles.detailItem}>
-            <Icon name="calendar-outline" size={22} color="#000" style={styles.itemIcon} />
-            <Text style={styles.itemLabel}>Joined Year:</Text>
-            <Text style={styles.itemText}>{facultyData.joinedYear}</Text>
-          </View>
-        </View>
-        
-        {/* Subjects */}
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Subjects Handled</Text>
-          
-          {facultyData.subjects.map((subject, index) => (
-            <View key={`subject-${index}`} style={styles.tagItem}>
-              <Icon name="book-outline" size={18} color="#000" style={styles.tagIcon} />
-              <Text style={styles.tagText}>{subject}</Text>
-            </View>
-          ))}
-        </View>
-        
-        {/* Research Interests */}
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Research Interests</Text>
-          
-          {facultyData.researchInterests.map((interest, index) => (
-            <View key={`research-${index}`} style={styles.tagItem}>
-              <Icon name="flask-outline" size={18} color="#000" style={styles.tagIcon} />
-              <Text style={styles.tagText}>{interest}</Text>
-            </View>
-          ))}
-        </View>
-        
-        {/* Office Hours */}
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Office Hours</Text>
-          
-          <View style={styles.officeHoursContainer}>
-            <Icon name="time-outline" size={22} color="#000" style={styles.officeHoursIcon} />
-            <Text style={styles.officeHoursText}>{facultyData.officeHours}</Text>
-          </View>
-        </View>
-        
-        {/* Actions */}
-        <View style={styles.actionsContainer}>
-          <TouchableOpacity style={styles.actionButtonLarge}>
-            <Icon name="calendar-outline" size={24} color="white" />
-            <Text style={styles.actionButtonText}>Schedule Meeting</Text>
+      <FlatList
+        data={filteredFaculty}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity 
+            style={styles.card}
+            onPress={() => handleCardPress(item.id)}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.name}>{item.name}</Text>
+            <Text style={styles.detail}>Department: {item.department}</Text>
+            <Text style={styles.detail}>Designation: {item.designation}</Text>
+            
+            {expandedCard === item.id && (
+              <View style={styles.actionButtons}>
+                <TouchableOpacity 
+                  style={[styles.actionButton, styles.editButton]}
+                  onPress={() => handleEdit(item)}
+                >
+                  <Text style={styles.actionButtonText}>Edit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={[styles.actionButton, styles.deleteButton]}
+                  onPress={() => handleDelete(item.id)}
+                >
+                  <Text style={styles.actionButtonText}>Delete</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.actionButtonLarge}>
-            <Icon name="mail-outline" size={24} color="white" />
-            <Text style={styles.actionButtonText}>Send Message</Text>
-          </TouchableOpacity>
+        )}
+      />
+
+      {/* Add Faculty Modal */}
+      <Modal
+        visible={showAddModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={handleCancel}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Add New Faculty</Text>
+            
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Faculty Name"
+              value={newFaculty.name}
+              onChangeText={(text) => setNewFaculty({...newFaculty, name: text})}
+            />
+            
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Department"
+              value={newFaculty.department}
+              onChangeText={(text) => setNewFaculty({...newFaculty, department: text})}
+            />
+            
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Designation"
+              value={newFaculty.designation}
+              onChangeText={(text) => setNewFaculty({...newFaculty, designation: text})}
+            />
+            
+            <View style={styles.modalButtonRow}>
+              <TouchableOpacity 
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={handleCancel}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={[styles.modalButton, styles.submitButton]}
+                onPress={handleAddFaculty}
+              >
+                <Text style={styles.submitButtonText}>Add Faculty</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
-      </ScrollView>
-    </SafeAreaView>
+      </Modal>
+
+      {/* Edit Faculty Modal */}
+      <Modal
+        visible={showEditModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={handleEditCancel}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Edit Faculty</Text>
+            
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Faculty Name"
+              value={editFaculty.name}
+              onChangeText={(text) => setEditFaculty({...editFaculty, name: text})}
+            />
+            
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Department"
+              value={editFaculty.department}
+              onChangeText={(text) => setEditFaculty({...editFaculty, department: text})}
+            />
+            
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Designation"
+              value={editFaculty.designation}
+              onChangeText={(text) => setEditFaculty({...editFaculty, designation: text})}
+            />
+            
+            <View style={styles.modalButtonRow}>
+              <TouchableOpacity 
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={handleEditCancel}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={[styles.modalButton, styles.submitButton]}
+                onPress={handleUpdateFaculty}
+              >
+                <Text style={styles.submitButtonText}>Update</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    padding: 20,
+    backgroundColor: '#f8f8f8',
   },
-  header: {
-    backgroundColor: '#000',
+  title: { 
+    fontSize: 24, 
+    fontWeight: 'bold', 
+    marginTop: 30,
+    marginBottom: 10, 
+    textAlign: 'center' 
+  },
+  headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
+    marginBottom: 15,
   },
-  backButton: {
-    marginRight: 15,
+  searchInput: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    backgroundColor: '#fff',
   },
-  headerTitle: {
+  addButton: {
+    backgroundColor: '#007bff',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 8,
+    height: 40,
+    justifyContent: 'center',
+  },
+  addButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  card: {
+    backgroundColor: '#fff',
+    padding: 30,
+    borderRadius: 8,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  name: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  detail: {
+    fontSize: 14,
+    color: '#555',
+  },
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    width: '90%',
+    maxWidth: 400,
+  },
+  modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: 'white',
-  },
-  contentContainer: {
-    flex: 1,
-    padding: 20,
-  },
-  profileCard: {
-    backgroundColor: 'white',
-    borderRadius: 15,
-    padding: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
+    textAlign: 'center',
     marginBottom: 20,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
   },
-  profileImageContainer: {
-    marginRight: 20,
-  },
-  profileInfo: {
-    flex: 1,
-  },
-  facultyName: {
-    fontSize: 22,
-    fontWeight: 'bold',
-  },
-  designation: {
-    fontSize: 16,
-    color: '#555',
-    marginTop: 3,
-  },
-  department: {
-    fontSize: 14,
-    color: '#777',
-    marginTop: 3,
-  },
-  sectionContainer: {
-    backgroundColor: 'white',
-    borderRadius: 15,
-    padding: 20,
-    marginBottom: 20,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-    paddingBottom: 8,
-  },
-  detailItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  itemIcon: {
-    marginRight: 10,
-    width: 25,
-  },
-  itemLabel: {
-    fontWeight: '500',
-    marginRight: 5,
-    width: 100,
-  },
-  itemText: {
-    flex: 1,
-    fontSize: 15,
-    color: '#333',
-  },
-  actionButton: {
-    padding: 5,
-  },
-  tagItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f2f2f2',
-    borderRadius: 20,
-    paddingVertical: 6,
+  modalInput: {
+    height: 45,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
     paddingHorizontal: 12,
-    marginRight: 10,
-    marginBottom: 10,
-    alignSelf: 'flex-start',
+    marginBottom: 15,
+    fontSize: 16,
   },
-  tagIcon: {
-    marginRight: 5,
-  },
-  tagText: {
-    fontSize: 14,
-    color: '#333',
-  },
-  officeHoursContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f8f8f8',
-    borderRadius: 10,
-    padding: 15,
-  },
-  officeHoursIcon: {
-    marginRight: 10,
-  },
-  officeHoursText: {
-    fontSize: 15,
-    color: '#333',
-  },
-  actionsContainer: {
+  modalButtonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 30,
+    marginTop: 10,
   },
-  actionButtonLarge: {
-    backgroundColor: '#000',
+  modalButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginHorizontal: 5,
+  },
+  cancelButton: {
+    backgroundColor: '#6c757d',
+  },
+  cancelButtonText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  submitButton: {
+    backgroundColor: '#28a745',
+  },
+  submitButtonText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  // Action Buttons Styles
+  actionButtons: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 10,
-    padding: 15,
-    flex: 0.48,
+    justifyContent: 'space-around',
+    marginTop: 15,
+    paddingTop: 15,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+  },
+  actionButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    minWidth: 80,
+  },
+  editButton: {
+    backgroundColor: '#17a2b8',
+  },
+  deleteButton: {
+    backgroundColor: '#dc3545',
   },
   actionButtonText: {
-    color: 'white',
-    fontSize: 15,
-    fontWeight: '500',
-    marginLeft: 8,
+    color: '#fff',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
 });
 
-export default FacultyDetailsScreen;
+export default FacultyDetails;

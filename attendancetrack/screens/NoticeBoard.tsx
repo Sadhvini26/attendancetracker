@@ -1,19 +1,40 @@
-// NoticeBoard.js - Simple implementation of the NoticeBoard screen
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+// NoticeBoard.js
+import React, { useEffect, useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  SafeAreaView,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import axios from 'axios';
+
+const SERVER_URL = 'http://192.168.149.239:3000'; // Replace with your backend IP or domain
 
 const NoticeBoard = () => {
   const navigation = useNavigation();
-  
-  // Sample notices
-  const notices = [
-    { id: 1, title: 'Exam Schedule Updated', date: '2025-04-15', content: 'The final examination schedule has been updated. Please check the academic calendar.' },
-    { id: 2, title: 'Holiday Announcement', date: '2025-04-20', content: 'The college will remain closed on April 25th for the Annual Day celebrations.' },
-    { id: 3, title: 'Campus Recruitment Drive', date: '2025-04-18', content: 'XYZ Technologies will be conducting a campus recruitment drive on May 5th. Interested students should register.' },
-  ];
-  
+  const [notices, setNotices] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchNotices = async () => {
+    try {
+      const response = await axios.get(`${SERVER_URL}/api/notices`);
+      setNotices(response.data);
+    } catch (error) {
+      console.error('Failed to fetch notices:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotices();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -23,18 +44,28 @@ const NoticeBoard = () => {
         <Text style={styles.headerTitle}>Notice Board</Text>
         <View style={styles.placeholder} />
       </View>
-      
-      <ScrollView style={styles.noticesContainer}>
-        {notices.map(notice => (
-          <View key={notice.id} style={styles.noticeCard}>
-            <View style={styles.noticeHeader}>
-              <Text style={styles.noticeTitle}>{notice.title}</Text>
-              <Text style={styles.noticeDate}>{notice.date}</Text>
-            </View>
-            <Text style={styles.noticeContent}>{notice.content}</Text>
-          </View>
-        ))}
-      </ScrollView>
+
+      {loading ? (
+        <ActivityIndicator size="large" color="#fff" style={{ marginTop: 50 }} />
+      ) : (
+        <ScrollView style={styles.noticesContainer}>
+          {notices.map(notice => {
+            const date = new Date(notice.createdAt).toLocaleDateString();
+            const [title, ...rest] = notice.text.split(/\.\s+|\n/); // optional: treat first sentence as title
+            const content = rest.join('. ');
+
+            return (
+              <View key={notice._id} style={styles.noticeCard}>
+                <View style={styles.noticeHeader}>
+                  <Text style={styles.noticeTitle}>{title || 'Notice'}</Text>
+                  <Text style={styles.noticeDate}>{date}</Text>
+                </View>
+                <Text style={styles.noticeContent}>{content || title}</Text>
+              </View>
+            );
+          })}
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 };
@@ -83,6 +114,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     flex: 1,
+    marginRight: 10,
   },
   noticeDate: {
     fontSize: 12,

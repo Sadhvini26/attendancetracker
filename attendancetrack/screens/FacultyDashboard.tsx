@@ -14,7 +14,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-// import {DisciplinaryPoints} from './DisciplinaryPoints'
+
 // Define navigation types
 type RootStackParamList = {
   SignIn: undefined;
@@ -25,12 +25,14 @@ type RootStackParamList = {
   Timetable: undefined;
   DisciplinaryPoints: undefined;
   FacultyPermissions: undefined;
+  FacultyProjects: {faculty: Faculty};
   // Add other screens as needed
 };
 
 type Faculty = {
   name: string;
   id?: string;
+  username?: string; // Add username for mentor field
   // Add other faculty properties as needed
 };
 
@@ -83,7 +85,7 @@ const FacultyDashboard = () => {
         <View style={styles.quickActionsContainer}>
           <TouchableOpacity 
             style={styles.quickActionButton}
-            onPress={() => navigation.navigate('FacultyPermissions')}
+            onPress={() => navigation.navigate('FacultyPermissions', {faculty})}
           >
             <FontAwesome name="file-text-o" size={24} color="black" />
             <Text style={styles.quickActionText}>Permissions</Text>
@@ -97,9 +99,12 @@ const FacultyDashboard = () => {
             <Text style={styles.quickActionText}>Time Table</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.quickActionButton}>
-            <Icon name="settings-outline" size={24} color="black" />
-            <Text style={styles.quickActionText}>Settings</Text>
+          <TouchableOpacity 
+            style={styles.quickActionButton}
+            onPress={() => navigation.navigate('FacultyProjects', {faculty})}
+          >
+            <MaterialCommunityIcons name="lightbulb-outline" size={24} color="black" />
+            <Text style={styles.quickActionText}>Projects</Text>
           </TouchableOpacity>
         </View>
       </View>
