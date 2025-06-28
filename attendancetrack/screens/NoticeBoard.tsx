@@ -13,7 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 
-const SERVER_URL = 'http://192.168.149.239:3000'; // Replace with your backend IP or domain
+const SERVER_URL = 'https://anveshak-hx6p.onrender.com'; // Replace with your backend IP or domain
 
 const NoticeBoard = () => {
   const navigation = useNavigation();

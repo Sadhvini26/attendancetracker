@@ -18,7 +18,7 @@ import {
  *  use your machine’s local network IP (e.g. 192.168.x.x),
  *  or an ngrok/tunnel address if you’re exposing localhost.
  */
-const BASE_URL = "http://192.168.149.239:3000/api/permissions";
+const BASE_URL = "https://anveshak-hx6p.onrender.com/api/permissions";
 
 interface PermissionRequest {
   _id?: string;            // MongoDB’s auto‐generated ID

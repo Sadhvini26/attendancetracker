@@ -19,7 +19,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const API_URL = "http://192.168.149.239:3000";
+const API_URL = "https://anveshak-hx6p.onrender.com";
 
 const FacultyProjects = () => {
   const [projects, setProjects] = useState([]);
@@ -184,3 +184,5 @@ const styles = StyleSheet.create({
 });
 
 export default FacultyProjects;
+
+

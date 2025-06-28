@@ -4,7 +4,7 @@ import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 
-const SERVER_URL = 'http://192.168.149.239:3000';
+const SERVER_URL = 'https://anveshak-hx6p.onrender.com';
 const EditNoticeBoard = () => {
   const [notices, setNotices] = useState([
     { id: '1', text: 'Exam schedule released.' },

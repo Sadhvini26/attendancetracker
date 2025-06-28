@@ -21,7 +21,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const SERVER_URL = 'http://192.168.149.239:3000'; // Update with your server IP
+const SERVER_URL = 'https://anveshak-hx6p.onrender.com'; // Update with your server IP
 // const SERVER_URL = 'http://192.168.198.239:3000'; // Update with your server IP
 
 const ProjectsScreen = () => {

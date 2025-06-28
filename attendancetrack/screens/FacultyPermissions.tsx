@@ -497,7 +497,7 @@ import { View, Text, TouchableOpacity, Modal, FlatList, StyleSheet, TextInput, A
 import Icon from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-const BASE_URL = "http://192.168.149.239:3000/api/permissions";
+const BASE_URL = "https://anveshak-hx6p.onrender.com/api/permissions";
 
 interface LeaveRequest {
   _id?: string;

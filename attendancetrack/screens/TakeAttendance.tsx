@@ -18,7 +18,7 @@ type RootStackParamList = {
 
 type TakeAttendanceRouteProp = RouteProp<RootStackParamList, 'TakeAttendance'>;
 
-const API_URL = "http://192.168.149.239:3000/api";
+const API_URL = "https://anveshak-hx6p.onrender.com/api";
 
 const TakeAttendance = () => {
   try {

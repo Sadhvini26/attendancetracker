@@ -20,7 +20,7 @@ mongoose.connect(process.env.MONGODB_URI)
 
 // Routes
 app.use('/api', require('./routes/auth'));
-app.use('/api/projects', require('./routes/projects')); // Add this line
+app.use('/api/projects', require('./routes/projects')); 
 // const facultyRoutes = require('./routes/faculty');
 // const attendanceRoutes = require('./routes/attendance');
 const noticeRoutes = require('./routes/noticeRoutes');
