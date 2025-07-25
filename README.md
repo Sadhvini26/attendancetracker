@@ -2,16 +2,16 @@
 
 A comprehensive college management application designed for students, faculty, and administrators at KMIT. The application provides role-based authentication and specialized features for each user type.
 
-## 🚀 Features
+## Features
 
-### 🔐 Authentication System
+### Authentication System
 - **Role-based authentication** with three user types:
   - Student Login
   - Faculty Login
   - Admin Login
 - Secure password-based navigation to respective dashboards
 
-### 👨‍🎓 Student Features
+### Student Features
 - **Dashboard** with college-uploaded opportunities
 - **Project** registration for 2nd years
   - Team formation (5 members max)
@@ -20,7 +20,7 @@ A comprehensive college management application designed for students, faculty, a
 - **Workshop Registration** for individual participation
 - **Internship Portal** exclusively for 3rd and 4th years
 
-### 👨‍🏫 Faculty Features
+### Faculty Features
 - **Dashboard** with comprehensive class management
 - **Student Details Management**
   - View assigned project teams
@@ -34,7 +34,7 @@ A comprehensive college management application designed for students, faculty, a
   - Disciplinary points management
   - Permission handling system
 
-### 👨‍💼 Admin Features
+### Admin Features
 - **Complete System Access** to all student and faculty information
 - **Notice Board Management**
   - Post important announcements via Notice Board
@@ -43,14 +43,14 @@ A comprehensive college management application designed for students, faculty, a
   - Exam date notifications
   - Student and faculty tracking
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 - **Frontend**: React Native
 - **Backend**: Node.js
 - **Database**: MongoDB
 - **Mobile**: Expo (React Native)
 
-## 📋 Prerequisites
+## Prerequisites
 
 Before running this application, make sure you have the following installed:
 - Node.js (v14 or higher)
@@ -58,7 +58,7 @@ Before running this application, make sure you have the following installed:
 - MongoDB
 - Expo CLI (for mobile development)
 
-## 🚀 Installation & Setup
+## Installation & Setup
 
 ### Backend Setup
 
@@ -117,7 +117,7 @@ npx expo start
 
 5. Download the Expo app on your mobile device to view the application
 
-## 📱 Application Structure
+## Application Structure
 
 ### Page Navigation Flow
 
@@ -143,11 +143,11 @@ npx expo start
 - Thread-based announcements
 - System-wide notifications
 
-## 🔧 Configuration
+## Configuration
 
 Ensure your MongoDB connection is properly configured in the backend. Update the database connection string in your server configuration file.
 
-## 📊 Database Schema
+## Database Schema
 
 The application uses MongoDB with collections for:
 - Users (Students, Faculty, Admin)
@@ -156,7 +156,7 @@ The application uses MongoDB with collections for:
 - Announcements
 - Internship Opportunities
 
-## 👥 Team
+## Team
 
 Developed for KMIT College Management System
 
