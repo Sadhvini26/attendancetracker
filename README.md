@@ -1,4 +1,4 @@
-# KMIT Anvesha - College Management System
+# KMIT Anvesha - Attendance Tracker
 
 A comprehensive college management application designed for students, faculty, and administrators at KMIT. The application provides role-based authentication and specialized features for each user type.
 
